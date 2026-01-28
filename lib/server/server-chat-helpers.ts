@@ -37,6 +37,23 @@ export async function getServerProfile() {
   return profileWithKeys
 }
 
+export async function getServerProfileFromRequest(request: Request) {
+  const authHeader =
+    request.headers.get("authorization") ||
+    request.headers.get("Authorization") ||
+    request.headers.get("x-api-token") ||
+    request.headers.get("X-Api-Token")
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length)
+    : authHeader
+
+  if (process.env.CHAT_API_TOKEN && token === process.env.CHAT_API_TOKEN) {
+    return buildProfileFromEnv()
+  }
+
+  return await getServerProfile()
+}
+
 function addApiKeysToProfile(profile: Tables<"profiles">) {
   const apiKeys = {
     [VALID_ENV_KEYS.OPENAI_API_KEY]: "openai_api_key",
@@ -64,6 +81,26 @@ function addApiKeysToProfile(profile: Tables<"profiles">) {
   }
 
   return profile
+}
+
+function buildProfileFromEnv() {
+  const profile: Record<string, string | null> = {
+    openai_api_key: process.env.OPENAI_API_KEY || null,
+    anthropic_api_key: process.env.ANTHROPIC_API_KEY || null,
+    google_gemini_api_key: process.env.GOOGLE_GEMINI_API_KEY || null,
+    mistral_api_key: process.env.MISTRAL_API_KEY || null,
+    groq_api_key: process.env.GROQ_API_KEY || null,
+    perplexity_api_key: process.env.PERPLEXITY_API_KEY || null,
+    openrouter_api_key: process.env.OPENROUTER_API_KEY || null,
+    openai_organization_id: process.env.OPENAI_ORGANIZATION_ID || null,
+    azure_openai_api_key: process.env.AZURE_OPENAI_API_KEY || null,
+    azure_openai_endpoint: process.env.AZURE_OPENAI_ENDPOINT || null,
+    azure_openai_35_turbo_id: process.env.AZURE_GPT_35_TURBO_NAME || null,
+    azure_openai_45_vision_id: process.env.AZURE_GPT_45_VISION_NAME || null,
+    azure_openai_45_turbo_id: process.env.AZURE_GPT_45_TURBO_NAME || null
+  }
+
+  return profile as Tables<"profiles">
 }
 
 export function checkApiKey(apiKey: string | null, keyName: string) {
