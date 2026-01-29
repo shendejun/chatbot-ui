@@ -1,5 +1,8 @@
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
-import { checkApiKey, getServerProfileFromRequest } from "@/lib/server/server-chat-helpers"
+import {
+  checkApiKey,
+  getServerProfileFromRequest
+} from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"

@@ -1,4 +1,7 @@
-import { checkApiKey, getServerProfileFromRequest } from "@/lib/server/server-chat-helpers"
+import {
+  checkApiKey,
+  getServerProfileFromRequest
+} from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
@@ -44,7 +47,6 @@ export async function POST(request: Request) {
     return new Response(readableStream, {
       headers: { "Content-Type": "text/plain" }
     })
-
   } catch (error: any) {
     let errorMessage = error.message || "An unexpected error occurred"
     const errorCode = error.status || 500

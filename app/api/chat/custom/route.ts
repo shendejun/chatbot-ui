@@ -34,7 +34,11 @@ export async function POST(request: Request) {
 
     const custom = new OpenAI({
       apiKey: customModel.api_key || "",
-      baseURL: customModel.base_url
+      baseURL: customModel.base_url,
+      defaultHeaders: {
+        "HTTP-Referer": "https://quanlizhushou.app",
+        "X-Title": "Quanli Assistant"
+      }
     })
 
     const response = await custom.chat.completions.create({

@@ -2,7 +2,8 @@ import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 
-export const runtime = "edge"
+// Use Node.js runtime to access all env vars (Edge runtime has limitations)
+export const runtime = "nodejs"
 
 type ModelListItem = {
   id: string
@@ -21,6 +22,12 @@ function isAuthorized(request: Request) {
   const token = authHeader?.startsWith("Bearer ")
     ? authHeader.slice("Bearer ".length)
     : authHeader
+
+  console.log(
+    "[models] CHAT_API_TOKEN env:",
+    process.env.CHAT_API_TOKEN ? "set" : "not set"
+  )
+  console.log("[models] received token:", token)
 
   if (!process.env.CHAT_API_TOKEN) return false
   return token === process.env.CHAT_API_TOKEN

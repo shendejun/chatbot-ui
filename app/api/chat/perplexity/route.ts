@@ -1,4 +1,7 @@
-import { checkApiKey, getServerProfileFromRequest } from "@/lib/server/server-chat-helpers"
+import {
+  checkApiKey,
+  getServerProfileFromRequest
+} from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"

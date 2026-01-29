@@ -9,6 +9,9 @@ const withPWA = require("next-pwa")({
 module.exports = withBundleAnalyzer(
   withPWA({
     reactStrictMode: true,
+    env: {
+      CHAT_API_TOKEN: process.env.CHAT_API_TOKEN
+    },
     images: {
       remotePatterns: [
         {
