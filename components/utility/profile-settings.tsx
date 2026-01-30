@@ -23,7 +23,7 @@ import {
 } from "@tabler/icons-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { FC, useCallback, useContext, useRef, useState } from "react"
+import { FC, useContext, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { SIDEBAR_ICON_SIZE } from "../sidebar/sidebar-switcher"
 import { Button } from "../ui/button"
@@ -241,48 +241,49 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     }
   }
 
-  const checkUsernameAvailability = useCallback(
-    debounce(async (username: string) => {
-      if (!username) return
+  const checkUsernameAvailability = useMemo(
+    () =>
+      debounce(async (username: string) => {
+        if (!username) return
 
-      if (username.length < PROFILE_USERNAME_MIN) {
-        setUsernameAvailable(false)
-        return
-      }
+        if (username.length < PROFILE_USERNAME_MIN) {
+          setUsernameAvailable(false)
+          return
+        }
 
-      if (username.length > PROFILE_USERNAME_MAX) {
-        setUsernameAvailable(false)
-        return
-      }
+        if (username.length > PROFILE_USERNAME_MAX) {
+          setUsernameAvailable(false)
+          return
+        }
 
-      const usernameRegex = /^[a-zA-Z0-9_]+$/
-      if (!usernameRegex.test(username)) {
-        setUsernameAvailable(false)
-        toast.error(
-          "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
-        )
-        return
-      }
+        const usernameRegex = /^[a-zA-Z0-9_]+$/
+        if (!usernameRegex.test(username)) {
+          setUsernameAvailable(false)
+          toast.error(
+            "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
+          )
+          return
+        }
 
-      setLoadingUsername(true)
+        setLoadingUsername(true)
 
-      const response = await fetch(`/api/username/available`, {
-        method: "POST",
-        body: JSON.stringify({ username })
-      })
+        const response = await fetch(`/api/username/available`, {
+          method: "POST",
+          body: JSON.stringify({ username })
+        })
 
-      const data = await response.json()
-      const isAvailable = data.isAvailable
+        const data = await response.json()
+        const isAvailable = data.isAvailable
 
-      setUsernameAvailable(isAvailable)
+        setUsernameAvailable(isAvailable)
 
-      if (username === profile?.username) {
-        setUsernameAvailable(true)
-      }
+        if (username === profile?.username) {
+          setUsernameAvailable(true)
+        }
 
-      setLoadingUsername(false)
-    }, 500),
-    []
+        setLoadingUsername(false)
+      }, 500),
+    [profile?.username]
   )
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

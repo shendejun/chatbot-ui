@@ -10,7 +10,7 @@ import {
   IconCircleXFilled,
   IconLoader2
 } from "@tabler/icons-react"
-import { FC, useCallback, useState } from "react"
+import { FC, useMemo, useState } from "react"
 import { LimitDisplay } from "../ui/limit-display"
 import { toast } from "sonner"
 
@@ -47,44 +47,45 @@ export const ProfileStep: FC<ProfileStepProps> = ({
     }
   }
 
-  const checkUsernameAvailability = useCallback(
-    debounce(async (username: string) => {
-      if (!username) return
+  const checkUsernameAvailability = useMemo(
+    () =>
+      debounce(async (username: string) => {
+        if (!username) return
 
-      if (username.length < PROFILE_USERNAME_MIN) {
-        onUsernameAvailableChange(false)
-        return
-      }
+        if (username.length < PROFILE_USERNAME_MIN) {
+          onUsernameAvailableChange(false)
+          return
+        }
 
-      if (username.length > PROFILE_USERNAME_MAX) {
-        onUsernameAvailableChange(false)
-        return
-      }
+        if (username.length > PROFILE_USERNAME_MAX) {
+          onUsernameAvailableChange(false)
+          return
+        }
 
-      const usernameRegex = /^[a-zA-Z0-9_]+$/
-      if (!usernameRegex.test(username)) {
-        onUsernameAvailableChange(false)
-        toast.error(
-          "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
-        )
-        return
-      }
+        const usernameRegex = /^[a-zA-Z0-9_]+$/
+        if (!usernameRegex.test(username)) {
+          onUsernameAvailableChange(false)
+          toast.error(
+            "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
+          )
+          return
+        }
 
-      setLoading(true)
+        setLoading(true)
 
-      const response = await fetch(`/api/username/available`, {
-        method: "POST",
-        body: JSON.stringify({ username })
-      })
+        const response = await fetch(`/api/username/available`, {
+          method: "POST",
+          body: JSON.stringify({ username })
+        })
 
-      const data = await response.json()
-      const isAvailable = data.isAvailable
+        const data = await response.json()
+        const isAvailable = data.isAvailable
 
-      onUsernameAvailableChange(isAvailable)
+        onUsernameAvailableChange(isAvailable)
 
-      setLoading(false)
-    }, 500),
-    []
+        setLoading(false)
+      }, 500),
+    [onUsernameAvailableChange]
   )
 
   return (

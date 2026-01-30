@@ -15,41 +15,17 @@ export const Announcements: FC<AnnouncementsProps> = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
 
   useEffect(() => {
-    // Load announcements from local storage
     const storedAnnouncements = localStorage.getItem("announcements")
-    let parsedAnnouncements: Announcement[] = []
+    if (!storedAnnouncements) return
 
-    if (storedAnnouncements) {
-      parsedAnnouncements = JSON.parse(storedAnnouncements)
-    }
-
-    // Filter out announcements that are no longer in state
-    const validAnnouncements = announcements.filter((a: Announcement) =>
-      parsedAnnouncements.find(storedA => storedA.id === a.id)
-    )
-
-    // Add new announcements to the list
-    const newAnnouncements = announcements.filter(
-      (a: Announcement) =>
-        !parsedAnnouncements.find(storedA => storedA.id === a.id)
-    )
-
-    // Combine valid and new announcements
-    const combinedAnnouncements = [...validAnnouncements, ...newAnnouncements]
-
-    // Mark announcements as read if they are marked as read in local storage
-    const updatedAnnouncements = combinedAnnouncements.map(
-      (a: Announcement) => {
-        const storedAnnouncement = parsedAnnouncements.find(
-          (storedA: Announcement) => storedA.id === a.id
-        )
-        return storedAnnouncement?.read ? { ...a, read: true } : a
+    try {
+      const parsedAnnouncements = JSON.parse(storedAnnouncements)
+      if (Array.isArray(parsedAnnouncements)) {
+        setAnnouncements(parsedAnnouncements)
       }
-    )
-
-    // Update state and local storage
-    setAnnouncements(updatedAnnouncements)
-    localStorage.setItem("announcements", JSON.stringify(updatedAnnouncements))
+    } catch (error) {
+      console.warn("Failed to parse announcements from local storage", error)
+    }
   }, [])
 
   const unreadCount = announcements.filter(a => !a.read).length
