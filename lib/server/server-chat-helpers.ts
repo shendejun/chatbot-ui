@@ -84,7 +84,22 @@ function addApiKeysToProfile(profile: Tables<"profiles">) {
 }
 
 function buildProfileFromEnv() {
-  const profile: Record<string, string | null> = {
+  const now = new Date().toISOString()
+  const apiUserId = "api-user"
+
+  const profile: Tables<"profiles"> = {
+    id: apiUserId,
+    user_id: apiUserId,
+    username: "api",
+    display_name: "API User",
+    bio: "",
+    profile_context: "",
+    image_path: "",
+    image_url: "",
+    created_at: now,
+    updated_at: null,
+    has_onboarded: true,
+    use_azure_openai: Boolean(process.env.AZURE_OPENAI_API_KEY),
     openai_api_key: process.env.OPENAI_API_KEY || null,
     anthropic_api_key: process.env.ANTHROPIC_API_KEY || null,
     google_gemini_api_key: process.env.GOOGLE_GEMINI_API_KEY || null,
@@ -97,10 +112,11 @@ function buildProfileFromEnv() {
     azure_openai_endpoint: process.env.AZURE_OPENAI_ENDPOINT || null,
     azure_openai_35_turbo_id: process.env.AZURE_GPT_35_TURBO_NAME || null,
     azure_openai_45_vision_id: process.env.AZURE_GPT_45_VISION_NAME || null,
-    azure_openai_45_turbo_id: process.env.AZURE_GPT_45_TURBO_NAME || null
+    azure_openai_45_turbo_id: process.env.AZURE_GPT_45_TURBO_NAME || null,
+    azure_openai_embeddings_id: process.env.AZURE_EMBEDDINGS_NAME || null
   }
 
-  return profile as Tables<"profiles">
+  return profile
 }
 
 export function checkApiKey(apiKey: string | null, keyName: string) {
